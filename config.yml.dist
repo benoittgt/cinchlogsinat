@@ -1,0 +1,8 @@
+nick: cinchbot
+channels: 
+  - '#bots'
+  - '#programming'
+server:
+  address: irc.tenthbit.net
+  port:    6667
+
