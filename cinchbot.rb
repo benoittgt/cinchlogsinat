@@ -5,6 +5,7 @@ begin
 rescue
   require 'FileUtils'
 end
+require 'htmlentities'
 require 'configru'
 require 'cinch'
 require 'cinch/plugins/basic_ctcp'
@@ -13,7 +14,7 @@ Configru.load do
   first_of 'config.yml'
   defaults do
     nick     'cinchbot'
-    channels ['#botters']
+    channels ['#duxos']
     server do
       address 'irc.freenode.net'
       port    6667
@@ -34,54 +35,69 @@ end
 
 class Log
   def self.setup
+    @@last_dir = nil
+    @@cur_dir  = nil
     @@m = nil
   end
 
   def self.file
     d = dir
     FileUtils.mkdir_p(d)
-    File.join(d, "#{@@m.channel.name.gsub('#','+')}.txt")
+    File.join(d, "#{@@m.channel.name.gsub('#','+')}.html")
   end
 
   def self.dir
-    File.join(Configru.logdir, Configru.server.address, *Time.now.strftime('%Y/%m/%d').split('/'))
+    @@last_dir = @@cur_dir
+    @@cur_dir  = File.join(Configru.logdir, Configru.server.address, *Time.now.strftime('%Y/%b/%d').split('/'))
+    @@cur_dir
   end
 
   def self.add(m)
+    return unless m.channel
     @@m = m
     File.open(file, 'a') do |f|
       time = Time.now.strftime('%T')
       chan = false
+      mode = false
       str  = nil
       msg  = m.message
       
       case m.command
       when 'NOTICE'
-        fmt = "[%s] -%s- %s"
+        fmt = "-%s- %s"
       when 'JOIN'
         chan = true
-        fmt = "[%s] * %s has joined %s"
+        fmt = "* %s has joined %s"
       when 'PART'
         chan = true
-        fmt = "[%s] * %s has left %s (%s)"
+        fmt = "* %s has left %s (%s)"
       when 'QUIT'
-        fmt = "[%s] * %s has quit (%s)"
+        fmt = "* %s has quit (%s)"
+      when 'MODE'
+        mode = true
+        p m
+        fmt = "* %s set mode: %s"
       else
         if msg[0..6] == "\x01ACTION"
           msg = msg[7..-1]
           msg.delete!("\x01")
-          fmt = "[%s] * %s %s"
+          fmt = "* %s %s"
         else
-          fmt = "[%s] <%s> %s"
+          fmt = "<%s> %s"
         end
       end
       
       p fmt
-      if chan
-        str = fmt % [time, @@m.user.nick, @@m.channel.name, msg]
-      else
-        str = fmt % [time, @@m.user.nick, msg]
-      end
+      fmt_args = [time]
+      fmt_args << @@m.user.nick
+      fmt_args << @@m.channel.name if chan
+      fmt_args << @@m.params[1..-1].join(' ') if mode
+      fmt_args << msg
+      
+      fmt = HTMLEntities.new.encode(fmt)
+      fmt = '<p><span class="date">%s</span> <span class="message ' + m.command + '">' + fmt + '</p>'
+      puts "str = #{fmt.inspect} % #{fmt_args.inspect}"
+      str = fmt % fmt_args
       f.write(str + "\r\n")
     end
   end
