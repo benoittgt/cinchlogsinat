@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Logs</title>
+	<link rel="stylesheet" type="text/css" href="/_theme/main.css">
+</head>
+<body>
+<noscript>JavaScript is required to view this page.</noscript>
+<div id="date"></div>
+<div id="logs">
+Loading...
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript">
+var page = '/irc.freenode.net/2011/Oct/10/+duxos.html';
+function update() {
+	$.ajax(page)
+		.complete(function(data, textStatus, jqXHR) {
+			$('#logs')[0].innerHTML = data.responseText;
+		});
+}
+update();
+setInterval(update, 5000);
+</script>
+</body>
+</html>

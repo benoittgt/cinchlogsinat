@@ -20,6 +20,7 @@ Configru.load do
       port    6667
     end
     logdir File.join(File.dirname(__FILE__), "logs")
+    theme  'default'
   end
 
   verify do
@@ -30,11 +31,22 @@ Configru.load do
       port    (0..65535)
     end
     logdir String
+    theme  String
   end
 end
 
 class Log
   def self.setup
+    @@theme_dir = File.join(File.dirname(__FILE__), 'themes', Configru.theme)
+    
+    FileUtils.mkdir_p(Configru.logdir)
+    
+    %w[index.html main.css].each do |x|
+      File.open(File.join(Configru.logdir, x), 'w') do |f|
+        f.write File.open(File.join(@@theme_dir, x), 'r').read
+      end
+    end
+    
     @@last_dir = nil
     @@cur_dir  = nil
     @@m = nil
@@ -75,7 +87,6 @@ class Log
         fmt = "* %s has quit (%s)"
       when 'MODE'
         mode = true
-        p m
         fmt = "* %s set mode: %s"
       else
         if msg[0..6] == "\x01ACTION"
@@ -87,7 +98,6 @@ class Log
         end
       end
       
-      p fmt
       fmt_args = [time]
       fmt_args << @@m.user.nick
       fmt_args << @@m.channel.name if chan
@@ -96,7 +106,6 @@ class Log
       
       fmt = HTMLEntities.new.encode(fmt)
       fmt = '<p><span class="date">%s</span> <span class="message ' + m.command + '">' + fmt + '</p>'
-      puts "str = #{fmt.inspect} % #{fmt_args.inspect}"
       str = fmt % fmt_args
       f.write(str + "\r\n")
     end
