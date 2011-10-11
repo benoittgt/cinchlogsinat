@@ -89,6 +89,11 @@ class Log
   def self.<<(m)
     self.add(m)
   end
+
+  # Wtf is this and why did I add it? :|
+  def log
+    Proc.new{|m| Log << m }
+  end
 end
 
 Log.setup
@@ -112,6 +117,10 @@ bot = Cinch::Bot.new do
   end
 
   on :quit do |m|
+    Log << m
+  end
+
+  on :mode do |m|
     Log << m
   end
 
