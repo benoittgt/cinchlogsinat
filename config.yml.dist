@@ -1,8 +1,7 @@
 nick: cinchbot
 channels: 
-  - '#bots'
-  - '#programming'
+  - '#botters'
 server:
-  address: irc.tenthbit.net
+  address: irc.freenode.net
   port:    6667
 
