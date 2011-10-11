@@ -13,9 +13,9 @@ Configru.load do
   first_of 'config.yml'
   defaults do
     nick     'cinchbot'
-    channels ['#bots', '#programming']
+    channels ['#botters']
     server do
-      address 'irc.tenthbit.net'
+      address 'irc.freenode.net'
       port    6667
     end
     logdir File.join(File.dirname(__FILE__), "logs")
