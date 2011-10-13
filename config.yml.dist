@@ -5,3 +5,11 @@ server:
   address: irc.freenode.net
   port:    6667
 
+logs:
+  theme: 'default'
+  protocol: 'http'
+  server: 'localhost'
+  port: 80
+  #path: ''
+  #dir: 'logs/'
+

@@ -19,8 +19,14 @@ Configru.load do
       address 'irc.freenode.net'
       port    6667
     end
-    logdir File.join(File.dirname(__FILE__), "logs")
-    theme  'default'
+    logs do
+      dir File.join(File.dirname(__FILE__), "logs")
+      theme  'default'
+      protocol 'http'
+      server   'localhost'
+      port      80
+      path     ''
+    end
   end
 
   verify do
@@ -32,24 +38,30 @@ Configru.load do
     end
     logdir String
     theme  String
+    http_server String
   end
 end
 
 class Log
   def self.setup
-    @@theme_dir = File.join(File.dirname(__FILE__), 'themes', Configru.theme)
+    @@last_dir = nil
+    @@cur_dir  = nil
+    @@m = nil
+    @@users = {}
+    @@theme_dir = File.join(File.dirname(__FILE__), 'themes', Configru.logs.theme)
     
-    FileUtils.mkdir_p(Configru.logdir)
+    #FileUtils.mkdir_p(Configru.logs.dir)
+    dir
     
     %w[index.html main.css].each do |x|
-      File.open(File.join(Configru.logdir, x), 'w') do |f|
+      File.open(File.join(Configru.logs.dir, x), 'w') do |f|
         f.write File.open(File.join(@@theme_dir, x), 'r').read
       end
     end
     
-    @@last_dir = nil
-    @@cur_dir  = nil
-    @@m = nil
+    File.open(File.join(Configru.logs.dir, 'jquery.hashchange.js'), 'w') do |f|
+      f.write File.open(File.join(@@theme_dir, '..', 'jquery.hashchange.js'), 'r').read
+    end
   end
 
   def self.file
@@ -58,14 +70,68 @@ class Log
     File.join(d, "#{@@m.channel.name.gsub('#','+')}.html")
   end
 
+  def self.short_dir
+    File.join(Configru.server.address, *Time.now.strftime('%Y/%b/%d').split('/'))
+  end
+
   def self.dir
     @@last_dir = @@cur_dir
-    @@cur_dir  = File.join(Configru.logdir, Configru.server.address, *Time.now.strftime('%Y/%b/%d').split('/'))
+    @@cur_dir  = File.join(Configru.logs.dir, short_dir)
+    FileUtils.mkdir_p(@@cur_dir)
+    
+    update_list
+    update_index
+    
     @@cur_dir
   end
 
+  def self.update_index
+    File.open(File.join(@@cur_dir, 'index.html'), 'w') do |f|
+      f.write File.open(File.join(@@theme_dir, 'index.html'), 'r').read
+    end
+  end
+
+  def self.update_list
+    return if @@last_dir == @@cur_dir
+    File.open(File.join(@@cur_dir, 'list.html'), 'w') do |f|
+      Configru.channels.each do |c|
+        f.write '<p><a href="' + c + '">' + c + '</a></p>'
+      end
+    end
+  end
+  
+  def self.add_users(m)
+    m.channel.users.keys.map do |user|
+      add_user(m, user)
+    end
+  end
+  
+  def self.add_user(m, user = nil)
+    if user.nil?
+      user = m.user
+    end
+    @@users[user.nick.downcase] ||= []
+    @@users[user.nick.downcase] << m.channel if m.channel
+    @@users[user.nick.downcase].uniq!
+    @@users[user.nick.downcase]
+  end
+  
+  def self.del_user(m)
+    if @@users.keys.include?(m.user.nick.downcase)
+      @@users[m.user.nick.downcase].each do |chan|
+        m.instance_variable_set('@channel', chan)
+        add(m)
+      end
+    end
+  end
+  
   def self.add(m)
-    return unless m.channel
+    if !m.channel?
+      if m.command == 'QUIT'
+        return del_user(m)
+      end
+      return
+    end
     @@m = m
     File.open(file, 'a') do |f|
       time = Time.now.strftime('%T')
@@ -78,16 +144,21 @@ class Log
       when 'NOTICE'
         fmt = "-%s- %s"
       when 'JOIN'
+        add_user(m)
         chan = true
         fmt = "* %s has joined %s"
       when 'PART'
+        @@users[m.user.nick.downcase].delete(m.channel)
         chan = true
         fmt = "* %s has left %s (%s)"
       when 'QUIT'
+        return del_user(m) unless m.channel
         fmt = "* %s has quit (%s)"
       when 'MODE'
         mode = true
         fmt = "* %s set mode: %s"
+      when '353'
+        return add_users(m)
       else
         if msg[0..6] == "\x01ACTION"
           msg = msg[7..-1]
@@ -151,6 +222,21 @@ bot = Cinch::Bot.new do
 
   on :message do |m|
     Log << m
+  end
+
+  on '353' do |m|
+    Log << m
+  end
+
+  on :message, /^.logs$/ do |m|
+    # Yes, this IS hacky...
+    url  = ::Configru.logs.protocol + '://'  + ::Configru.logs.server
+    url += ':' + ::Configru.logs.port.to_s unless ::Configru.logs.port == 80
+    url += '/' + ::Configru.logs.path unless ::Configru.logs.path.empty?
+    url += "/#{::Log.short_dir}#{m.channel.name}".gsub('//','/')
+    msg = ::Cinch::Message.new(":#{m.bot.nick}!user@host PRIVMSG #{m.channel} :#{m.sender.nick}: #{url}", m.bot)
+    m.reply msg, true
+    ::Log.add(m2)
   end
 end
 

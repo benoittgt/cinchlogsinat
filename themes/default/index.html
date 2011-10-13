@@ -6,22 +6,64 @@
 	<link rel="stylesheet" type="text/css" href="/_theme/main.css">
 </head>
 <body>
-<noscript>JavaScript is required to view this page.</noscript>
-<div id="date"></div>
-<div id="logs">
-Loading...
+<div id="wrap">
+	<noscript>JavaScript is required to view this page.</noscript>
+	<div id="error" style="display:none;">There was an error accessing <span id="error_page">the requested content</span>.</div>
+	<div id="viewing_logs_for" style="display:none;">Viewing logs for <a href="#" onclick="list()"><span class="date"></span></a></div>
+	<div id="logs">
+		Loading...
+	</div>
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript" src="/jquery.hashchange.js"></script>
 <script type="text/javascript">
-var page = '/irc.freenode.net/2011/Oct/10/+duxos.html';
+function list() {
+	location.hash='#';
+	return false;
+}
+
+$('#viewing_logs_for').css('display', '');
+var error = document.getElementById('error');
+var error_page = document.getElementById('error_page');
+var date = '';
+var page = 'list.html';
+var oldhash;
 function update() {
+	date = location.pathname.split('/').splice(2,3).reverse().join(' ');
+	document.getElementsByClassName('date')[0].innerText = date;
+	if(location.hash == '') {
+		page = 'list.html';
+	} else if(location.hash != oldhash) {
+		oldhash = location.hash;
+		page = location.hash.replace(/#/g, '+') + '.html';
+	}
+	
 	$.ajax(page)
 		.complete(function(data, textStatus, jqXHR) {
+			error.style.display = 'none';
 			$('#logs')[0].innerHTML = data.responseText;
-		});
+		}).error(show_error);
 }
+
+function show_error() {
+	if(page == 'list.html') {
+		error_page.innerText = 'the list of channels';
+	} else if(page != '') {
+		error_page.innerText = 'logs for ' + location.hash;
+	} else {
+		error_page.innerText = 'the requested content';
+	}
+	error.style.display = '';
+}
+
+function scroll_down() {
+	$('#logs').scrollTop($('#logs').height());
+}
+
 update();
+$(window).hashchange(update);
 setInterval(update, 5000);
+setInterval(scroll_down, 100)
 </script>
 </body>
 </html>
