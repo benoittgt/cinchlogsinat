@@ -3,15 +3,23 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<title>Logs</title>
-	<link rel="stylesheet" type="text/css" href="/_theme/main.css">
+	<link rel="stylesheet" type="text/css" href="/main.css">
 </head>
 <body>
 <div id="wrap">
 	<noscript>JavaScript is required to view this page.</noscript>
 	<div id="error" style="display:none;">There was an error accessing <span id="error_page">the requested content</span>.</div>
-	<div id="viewing_logs_for" style="display:none;">Viewing logs for <a href="#" onclick="list()"><span class="date"></span></a></div>
-	<div id="logs">
-		Loading...
+	<div id="viewing_logs_for" style="display:none;"><h1>Logs for <span class="channel"></span> on <a href="#" onclick="list();"><span class="date"></span></a></h1></div>
+	<div id="bottom">
+		<div id="logs">
+			Loading...
+		</div>
+		<div id="users" style="display: none;">
+			<h2>Users</h2>
+			<ul id="userlist">
+				<li>Loading...</li>
+			</ul>
+		</div>
 	</div>
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
@@ -33,7 +41,9 @@ function update() {
 	document.getElementsByClassName('date')[0].innerText = date;
 	if(location.hash == '') {
 		page = 'list.html';
+		$('#users').css('display', 'none');
 	} else if(location.hash != oldhash) {
+		$('#users').css('display', '');
 		oldhash = location.hash;
 		page = location.hash.replace(/#/g, '+') + '.html';
 	}
@@ -63,7 +73,7 @@ function scroll_down() {
 update();
 $(window).hashchange(update);
 setInterval(update, 5000);
-setInterval(scroll_down, 100)
+setInterval(scroll_down, 100);
 </script>
 </body>
 </html>
