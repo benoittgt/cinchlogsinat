@@ -234,11 +234,9 @@ bot = Cinch::Bot.new do
     url += ':' + ::Configru.logs.port.to_s unless ::Configru.logs.port == 80
     url += '/' + ::Configru.logs.path unless ::Configru.logs.path.empty?
     url += "/#{::Log.short_dir}#{m.channel.name}".gsub('//','/')
-    p m
-    p m.methods
     msg = ::Cinch::Message.new(":#{m.bot.nick}!user@host PRIVMSG #{m.channel} :#{m.user.nick}: #{url}", m.bot)
-    m.reply msg, true
-    ::Log.add(m2)
+    m.reply msg.message
+    ::Log.add(msg)
   end
 end
 

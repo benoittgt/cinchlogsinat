@@ -52,6 +52,9 @@ function update() {
 		.complete(function(data, textStatus, jqXHR) {
 			error.style.display = 'none';
 			$('#logs')[0].innerHTML = data.responseText;
+			$('.channel').each(function() {
+				this.innerHTML = location.hash
+			});
 		}).error(show_error);
 }
 
