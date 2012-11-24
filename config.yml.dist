@@ -1,15 +1,13 @@
-nick: cinchbot
-channels: 
-  - '#botters'
-server:
-  address: irc.freenode.net
-  port:    6667
+nick: logger
+
+server: irc.tenthbit.net
+port: 6667
+channels:
+  - "#foobar"
 
 logs:
-  theme: 'default'
-  protocol: 'http'
-  server: 'localhost'
-  port: 80
-  #path: ''
-  #dir: 'logs/'
+  dir: './logs'
+  protocol: http
+  server:   localhost
+  port:     8000
 
