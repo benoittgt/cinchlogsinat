@@ -38,15 +38,16 @@ class Log
       when 'NOTICE'
         fmt = "-%s- %s"
       when 'JOIN'
-        chan = true
+        chan = false
         fmt = "* %s has joined %s"
       when 'PART'
-        chan = true
+        chan = false
         fmt = "* %s has left %s (%s)"
       when 'QUIT'
+        chan = false
         fmt = "* %s has quit (%s)"
       when 'MODE'
-        mode = true
+        mode = false
         fmt = "* %s set mode: %s"
       else
         if msg[0..6] == "\x01ACTION"

@@ -15,11 +15,11 @@ Configru.load(File.join(File.dirname(__FILE__), 'config.yml')) do
     transform {|n| [n, n + '1'] }
   end
 
-  option :server,   String, 'irc.tenthbit.net'
+  option :server,   String, 'che.indymedia.org'
   option :port,     Numeric,  6667
-  option :channels, Array,  ['#foobar']
+  option :channels, Array,  ['#home']
 
-#  option :log_dir, String, './logs'
+  option :log_dir, String, './logs'
   option_group :logs do
     option :dir,      String,  './logs'
     option :protocol, String,  'http'
@@ -40,21 +40,21 @@ bot = Cinch::Bot.new do
     c.nicks    = Configru.nick
   end
 
-  on :join do |m|
-    Log << m
-  end
+  # on :join do |m|
+  #   Log << m
+  # end
 
-  on :part do |m|
-    Log << m
-  end
+  # on :part do |m|
+  #   Log << m
+  # end
 
-  on :quit do |m|
-    Log << m
-  end
+  # on :quit do |m|
+  #   Log << m
+  # end
 
-  on :mode do |m|
-    Log << m
-  end
+  # on :mode do |m|
+  #   Log << m
+  # end
 
   on :message do |m|
     Log << m
