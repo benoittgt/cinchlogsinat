@@ -1,11 +1,11 @@
 nick: logger
 
-server: che.indymedia.org
+server: irc.freenode.net
 port: 6667
-channels: "#home"
+channels: ["#botwar"]
 
 logs:
-  dir: 'Simplon/cinchbot/logbot/logs/che.indymedia.org/2014/Oct/16/'
+  dir: './logs'
   protocol: http
   server:   localhost
   port:     8000

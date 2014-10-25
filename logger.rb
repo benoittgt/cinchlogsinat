@@ -1,7 +1,5 @@
 require 'sqlite3'
 
-
-
 class Log
   def self.setup
     @@last_dir = nil
@@ -9,19 +7,10 @@ class Log
     @@theme_dir = File.join(File.dirname(__FILE__), 'theme')
     @@log_dir = Configru.logs.dir
     
-    dir
-  end
+    @@db = SQLite3::Database.open "irclogs.db"
+    @@db.execute "CREATE TABLE IF NOT EXISTS irclogs(Id INTEGER PRIMARY KEY, timestamp TEXT, nick TEXT, ircmessage TEXT)"
 
-  begin
-    db = SQLite3::Database.open "test_sqlite.db"
-    db.execute "CREATE TABLE IF NOT EXISTS irclogs(Id INTEGER PRIMARY KEY, Nick TEXT, Message TEXT)"
-    puts "--->>>>> db begin"
-  rescue SQLite3::Exception => e
-    puts "Exception occured"
-    puts e
-  ensure
-    db.close if db
-    puts "--->>>>> DB close"
+    dir
   end
 
 
@@ -42,13 +31,12 @@ class Log
 
   def self.add(m)
     begin
-      db = SQLite3::Database.open "irclogs.db"
-      db.execute "CREATE TABLE IF NOT EXISTS irclogs(Id INTEGER PRIMARY KEY, Nick TEXT, Message TEXT)"
+      #db = SQLite3::Database.open "irclogs.db"
 
       return unless m.channel?
 
       File.open(find_file(m), 'a') do |f|
-        time = Time.now.strftime('%T')
+        time = Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
         chan = false
         mode = false
         str  = nil
@@ -91,13 +79,16 @@ class Log
         str = fmt % fmt_args
         f.write(str + "\r\n")
 
-        db.execute( "INSERT INTO irclogs ( Nick, Message ) VALUES ( ?, ? )", [m.user.nick, msg])
+        @@db.execute( "INSERT INTO irclogs ( timestamp, nick, ircmessage ) VALUES ( ?, ?, ? )", [time, m.user.nick, msg])
+        sqllast = @@db.execute ("SELECT * FROM irclogs ORDER BY Id DESC LIMIT 1")
+        puts time + " SQlite >> #{sqllast}"
+
       end
     rescue SQLite3::Exception => e
-      puts "Exception occured"
+      puts time + " SQlite >> Exception occured"
       puts e
     ensure
-      db.close if db
+      @@db.close if @@db
     end
   end
 
