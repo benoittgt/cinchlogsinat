@@ -1,15 +1,9 @@
 #!/usr/bin/env ruby
-# require 'sqlite3'
 
 begin
   require 'fileutils'
-  # db = SQLite3::Database.open "test_sqlite.db"
-  # db.execute "CREATE TABLE IF NOT EXISTS irclogs(Id INTEGER PRIMARY KEY,
-  #   Nick TEXT, Message TEXT)"
 rescue
   require 'FileUtils'
-# ensure
-#   db.close if db
 end
 
 
@@ -47,22 +41,6 @@ bot = Cinch::Bot.new do
     c.channels = Configru.channels
     c.nicks    = Configru.nick
   end
-
-  # on :join do |m|
-  #   Log << m
-  # end
-
-  # on :part do |m|
-  #   Log << m
-  # end
-
-  # on :quit do |m|
-  #   Log << m
-  # end
-
-  # on :mode do |m|
-  #   Log << m
-  # end
 
   on :message do |m|
     Log << m
