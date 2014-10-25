@@ -1,23 +1,31 @@
 #!/usr/bin/env ruby
+# require 'sqlite3'
 
 begin
   require 'fileutils'
+  # db = SQLite3::Database.open "test_sqlite.db"
+  # db.execute "CREATE TABLE IF NOT EXISTS irclogs(Id INTEGER PRIMARY KEY,
+  #   Nick TEXT, Message TEXT)"
 rescue
   require 'FileUtils'
+# ensure
+#   db.close if db
 end
+
 
 require 'configru'
 require 'cinch'
 require File.join(File.dirname(__FILE__), 'logger.rb')
 
+
 Configru.load(File.join(File.dirname(__FILE__), 'config.yml')) do
-  option :nick,   String, 'logger' do
+  option :nick do
     transform {|n| [n, n + '1'] }
   end
 
-  option :server,   String, 'che.indymedia.org'
-  option :port,     Numeric,  6667
-  option :channels, Array,  ['#home']
+  option :server
+  option :port
+  option :channels
 
   option :log_dir, String, './logs'
   option_group :logs do
