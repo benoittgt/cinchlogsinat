@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- Bootstrap -->
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
 	<!--[if lt IE 9]>
 	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
@@ -17,7 +18,7 @@
 			<h1><span class="glyphicon glyphicon-signal"></span> IRC Stats</h1>
 		</div>
 		<div class="row">
-			<div class="col-sn-12">
+
 				<table class="table table-hover table-condensed">
 					<thead>
 						<tr>
@@ -29,14 +30,14 @@
 					<tbody>
 						<% @dbcont.each_with_index do |item, index| %>
 						<tr>
-							<td><%= @dbcont[index][1] %></td>
+							<td ><%= @dbcont[index][1] %></td>
 							<td><%= @dbcont[index][2] %></td>
-							<td><%= @dbcont[index][3] %></td>
+							<td style ="word-break:break-all;"><%= @dbcont[index][3] %></td>
 						</td>
 						<% end %>
 					</ul>
 				</div>
-			</div>
+
 		</div>
 		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>

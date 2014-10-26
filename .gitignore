@@ -2,3 +2,4 @@ logs
 *.yml
 *.yaml
 *.db
+.DS_Store
