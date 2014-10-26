@@ -30,9 +30,6 @@ class Log
   end
 
   def self.add(m)
-    # begin
-      #db = SQLite3::Database.open "irclogs.db"
-
       return unless m.channel?
 
       File.open(find_file(m), 'a') do |f|
@@ -84,12 +81,6 @@ class Log
         puts time + " SQlite >> #{sqllast}"
 
       end
-    # rescue SQLite3::Exception => e
-    #   puts time + " SQlite >> Exception occured"
-    #   puts e
-    # ensure
-    #   @@db.close if @@db
-    # end
   end
 
   def self.<<(m)

@@ -1,4 +1,4 @@
-#Cinch plugin for irc : logs printed on Sinatra
+##Cinch plugin for irc : logs printed on Sinatra
 
 I've started a bot from [logbot](https://github.com/duckinator/logbot) made by [duckinator](https://github.com/duckinator). Thanks bro. 
 I've added sqlite, sinatra and bootstrap. 
@@ -22,7 +22,7 @@ Fork it !
 * Tests
 * d3.js stats
 * cinch status from Sinatra
-* ...
+* ...git a
 
 ### Licence
 
