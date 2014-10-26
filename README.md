@@ -15,6 +15,15 @@ To start the project
 
 Fork it ! 
 
+### To Do
+
+* Big refactoring
+* Security check
+* Tests
+* d3.js stats
+* cinch status from Sinatra
+* ...
+
 ### Licence
 
 [MIT LICENCE](http://www.opensource.org/licenses/mit-license)
