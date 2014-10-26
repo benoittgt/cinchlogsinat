@@ -1,6 +1,6 @@
 require 'sinatra'
 require './logger'
-require 'SQLite3'
+require 'sqlite3'
 
 db = SQLite3::Database.open "irclogs.db"
 
