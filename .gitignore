@@ -3,3 +3,4 @@ logs
 *.yaml
 *.db
 .DS_Store
+Gemfile.lock
